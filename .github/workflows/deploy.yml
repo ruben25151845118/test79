@@ -20,17 +20,21 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20' # Actualizado a Node 20 (LTS a julio 2025)
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci  # Cambiado de npm install a npm ci para builds más consistentes
+        run: npm ci # Más consistente para CI/CD
 
       - name: Build
         run: npm run build
         env:
-          # Agrega variables de entorno si tu proyecto las necesita
+          # Añade variables de entorno si las necesitas
           # Ejemplo: REACT_APP_API_URL: ${{ secrets.API_URL }}
+
+      - name: Fix 404 for client-side routing
+        run: cp build/index.html build/404.html # Para SPA como React o Vite
+        if: success() # Solo ejecuta si el build fue exitoso
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
@@ -38,7 +42,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: './build'  # Asegúrate de que este sea el directorio correcto
+          path: './build' # Cambia a 'dist' si usas Vite u otro framework
 
       - name: Deploy to GitHub Pages
         id: deployment
